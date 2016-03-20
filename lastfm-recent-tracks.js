@@ -1,4 +1,7 @@
-
+/*
+	Last.fm recent tracks plugin
+	https://github.com/wiredimage/Last.fm-recent-tracks
+*/
 function recentLFM(user,apikey,limit,container) {
 	// Defaults
 	var html = '';
@@ -20,15 +23,8 @@ function recentLFM(user,apikey,limit,container) {
 				} else {
 //					console.log('img: '+item.image[1]['#text']);
 					html += '<li class="lfm-track"><a href="'+item.url+'" class="lfm-artwork" target="_blank"><img src="'+item.image[2]['#text']+'" alt="'+item.album['#text']+'" /></a><span class="lfm-trackname"><a href="'+item.url+'">'+item.name+'</a></span>'+divider+'<span class="lfm-artist"><a href="'+artistlink[0]+'" target="_blank">' + item.artist['#text'] + '</a></span></li>';
-				}
-/*
-	            if(item.image[1])==null {
-		            
-	            } else {
-*/
-	            
+				}	            
 				
-// 				}
             } // close the if statement
             counter++ // add 1 to the counter variable each time the each loop runs
         }); // close each loop
