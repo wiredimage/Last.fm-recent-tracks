@@ -1,35 +1,56 @@
-function recentLFM(user,limit,imgsize,divider,container) {
+
+function recentLFM(user,apikey,limit,container) {
 	// Defaults
-	var counter = 0;
-	var listwrap = '<ul class=\"lfm-recent\"></ul>';
-	var apikey = '048785ed2aa0722643cb5c81cc39baa2'; // Generate your own API Key for use
 	var html = '';
-	
-	$.getJSON("http://ws.audioscrobbler.com/2.0/?method=user.getRecentTracks&user="+user+"&api_key="+apikey+"&limit="+limit+"&format=json&callback=?", function(data) {
-		
-		$.each(data.recenttracks.track, function(i, item) {
-	        // Isolate the Artist URL from the track URL
-            var artistlink = item.url.split('_/');
+	var counter = 0;
+	var list = '<ul class=\"lfm-recent\"></ul>';
+	var divider = " &mdash; ";
+	var nullalbum = '/wp-content/uploads/2016/03/smokehaus-album-cover.png';
+
+    $.getJSON("http://ws.audioscrobbler.com/2.0/?method=user.getRecentTracks&user="+user+"&api_key="+apikey+"&limit="+limit+"&format=json&callback=?", function(data) {
+//	console.log(data);
+        $.each(data.recenttracks.track, function(i, item) {
+	        
+            var artistlink = item.url.split('_/'); // Split the URL to give just the artist page
             
-            // Loop through data
-            if(i < limit) {
-                html += '<li class="lfm-track"><a href="'+item.url+'" target="_blank"><img src="'+item.image[imgsize]['#text']+'" class="lfm-artwork" alt="Album cover for '+item.album['#text']+'" /></a><span class="lfm-trackname"><a href="'+item.url+'">'+item.name+'</a></span>'+divider+'<span class="lfm-artist"><a href="'+artistlink[0]+'" target="_blank">'+item.artist['#text']+'</a></span></li>';
+            if(counter < (limit)) {
+	            if(item.image[1]['#text']=='') { // Check if image is null
+//					console.log('Null');
+					html += '<li class="lfm-track"><a href="'+item.url+'" class="lfm-artwork" target="_blank"><img src="'+nullalbum+'" alt="'+item.album['#text']+'" /></a><span class="lfm-trackname"><a href="'+item.url+'">'+item.name+'</a></span>'+divider+'<span class="lfm-artist"><a href="'+artistlink[0]+'" target="_blank">' + item.artist['#text'] + '</a></span></li>';
+				} else {
+//					console.log('img: '+item.image[1]['#text']);
+					html += '<li class="lfm-track"><a href="'+item.url+'" class="lfm-artwork" target="_blank"><img src="'+item.image[2]['#text']+'" alt="'+item.album['#text']+'" /></a><span class="lfm-trackname"><a href="'+item.url+'">'+item.name+'</a></span>'+divider+'<span class="lfm-artist"><a href="'+artistlink[0]+'" target="_blank">' + item.artist['#text'] + '</a></span></li>';
 				}
-            i++ // add 1 to the counter variable each time the each loop runs
+/*
+	            if(item.image[1])==null {
+		            
+	            } else {
+*/
+	            
+				
+// 				}
+            } // close the if statement
+            counter++ // add 1 to the counter variable each time the each loop runs
         }); // close each loop
         
-        $(container).append(html).wrapInner(listwrap); // Append html to the container wrapped in the list
-		
-		});
-} // End recentLFM function
+        $(container).append(html).wrapInner(list);
+    }); // close JSON call
+}
 
 $(document).ready(function() {
-	
-	var user = $("div").data('lfm-user');
-	var limit = $("div").data('lfm-limit');
-	var imgsize = $("div").data('lfm-imgsize');
-	var divider = $("div").data('lfm-divider');
-	
-	recentLFM(user,limit,imgsize,divider,'.lfm');
-	
-}); // End document ready function
+
+if ( $('.listening-to').length ) {
+
+		$.each($('.listening-to'), function (index, value) {
+			var user = $(this).data('lfm-user');
+			var apikey = $(this).data('lfm-api');
+			var limit = $(this).data('lfm-limit');
+
+// 			console.log(user+' '+apikey+' '+limit);
+		  
+			recentLFM(user,apikey,limit,this);
+		});
+
+}
+
+}); // close document ready function
